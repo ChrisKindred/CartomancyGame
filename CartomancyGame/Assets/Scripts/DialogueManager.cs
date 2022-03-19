@@ -1,63 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Ink.Parsed;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 using Choice = Ink.Runtime.Choice;
 using Story = Ink.Runtime.Story;
 using Text = UnityEngine.UI.Text;
 
+
 public class DialogueManager : MonoBehaviour
 {
     public TextAsset inkJSON;
-    public Text questionBox;
-    public GameObject [] choiceButtons;
-    public bool isTalking;
-    public string currentKnot = "Default";
-
-    public GameObject garfield;
-    public GameObject triangle;
-
-    public Vector2 left;
-    //public Vector2 leftOffStage;
-    public Vector2 right;
-    //public Vector2 rightOffStage;
-    public Vector2 resetPos;
-
     private static Story story;
-    
     private static Choice choiceSelected;
-
+    
+    //this is because for some reason it's impossible to get the current knot unless it's a hardcoded call, sorry
+    //use ChooseKnot("stringknot"); to call a know manually (shown in Awake())
+    [SerializeField]
+    private string lastManuallyChosenKnot = " ";
+    
+    [Header("UI Elements")]
+    public Text textBox;
+    public GameObject [] choiceButtons;
+    
+    
+    [Header("Stage Directions")] //look at Acting() for more info
+    public int numOfDirectionsPerActor;
+    public GameObject [] actors;
+    
+    
+    [Header("Actor Speed in Seconds")] //how long it takes an actor to cross the screen
+    public float walkDuration; 
+    public float runDuration;
+    
+    
+    [Header("Stage Positions")] //look at Acting() for more info
+    public Vector2 screenLeft;
+    public Vector2 offScreenLeft;
+    public Vector2 screenRight;
+    public Vector2 offScreenRight;
+    public Vector2 resetPos;
+    
     void Awake()
     {
         story = new Story(inkJSON.text);
         ChooseKnot("Default");
-        
-        UpdateUI();
-        
     }
-
-    void Update()
+    
+    void UpdateUI() // how the UI is updated, this is the leading function of the entire script
     {
-        
-    }
-
-    string LoadStoryChunk()
-    {
-        string text = "";
-        
-        if (story.canContinue)
-        {
-            text = story.ContinueMaximally();
-        }
-
-        return text;
-    }
-
-
-    void UpdateUI()
-    {
-        questionBox.text = LoadStoryChunk();
+        textBox.text = LoadStoryChunk();
 
         ResetActors();
         StageDirections();
@@ -78,138 +72,157 @@ public class DialogueManager : MonoBehaviour
         {
             choiceButtons[choice.index].GetComponentInChildren<Text>().text = choice.text;
         }
-        
     }
 
-
-    public void ChoiceIndex0() // first choice
+    
+    
+    //********
+    //These functions are design to be edited and added to as more functionality is needed
+    
+    public void ChoiceIndex0() // 1st choice (remember to assign to button)
     {
         story.ChooseChoiceIndex(0);
         UpdateUI();
-        //reset postions of actors
     }
     
-    public void ChoiceIndex1() // second choice
+    public void ChoiceIndex1() // 2nd choice (remember to assign to button)
     {
         story.ChooseChoiceIndex(1);
         UpdateUI();
-        //reset postions of actors
     }
     
-    public void ChoiceIndex2() // third choice
+    public void ChoiceIndex2() // 3rd choice (remember to assign to button)
     {
         story.ChooseChoiceIndex(2);
         UpdateUI();
-        //reset postions of actors
     }
+    
+    //copy, paste, and change the number to add another choice
+    
+    //copy, paste, and have it call a specific node that you must dictate using ChooseKnot("stringknot");
 
-
-
-    public void StageDirections()
-    {
-        List<string> tags = story.currentTags;
-        List<string> list1 = new List<string>();
-        List<string> list2 = new List<string>();
-
-        if (tags.Count > 0)
-        {
-            int listCount = 1;
-            foreach (string thing in tags)
-            {
-                if (listCount == 1)
-                {
-                    list1.Add(thing);
-                }
-
-                if (listCount == 2)
-                {
-                    list2.Add(thing);
-                }
-                
-                if (thing == "end")
-                {
-                    listCount++;
-                }
-            }
-
-            foreach (string stuff in list1)
-            {
-                Debug.Log(stuff);
-            }
-            
-            foreach (string stuff2 in list2)
-            {
-                Debug.Log(stuff2);
-            }
-            Acting(list1);
-            Acting(list2);
-            
-        }
-        
-    }
-
-    private void Acting(List<string> list)
+    
+    
+    //this function handles how to display and move an actor on the screen 
+    //KEEP IN MIND THE STAGE DIRECTIONS PER ACTOR AND UPDATE THE PUBLIC INT IN THE EDITOR ACCORDINGLY!!!!!!!!!!!!!!!!!!
+    private void Acting(List<string> list) //continue to edit/hardcode these actions as more directions/actors are needed/added
     {
         GameObject actor = null;
         Vector2 endPos = new Vector2();
         
-        //character
-        switch (list[0]) //actor
+        switch (list[0]) //Actor
         {
             case "garf":
-                actor = garfield;
+                actor = actors[0]; 
                 break;
             case "tri":
-                actor = triangle;
+                actor = actors[1];
                 break;
         }
 
-        switch (list[2]) //location
+        switch (list[2]) //Ending Location
         {
             case "left":
-                endPos = left;
+                endPos = screenLeft;
                 break;
             case "right":
-                endPos = right;
+                endPos = screenRight;
                 break;
         }
         
-        switch (list[1]) //action
+        switch (list[1]) //Action / Starting Location
         {
-            case "runs":
+            case "runsRightTo": //starts right and runs to the endPos
+                actor.transform.position = offScreenRight;
+                actor.transform.DOMove(endPos, runDuration);
+                break;
+            case "runsLeftTo": //starts left and runs to the endPos
+                actor.transform.position = offScreenLeft;
+                actor.transform.DOMove(endPos, runDuration);
+                break;
+            case "starts": //begins the scene in specified position
                 actor.transform.position = endPos;
                 break;
-            case "starts":
-                actor.transform.position = endPos;
-                break;
-                
+        }
+    }
+    //********
+    
+    
+    
+    
+    
+    //Heavy Lifting Functions_____________________________________________________________________________
+
+    string LoadStoryChunk() //loads the text of that specific Knot or "Chunk"
+    {
+        string text = "";
+        
+        if (story.canContinue)
+        {
+            text = story.ContinueMaximally();
+        }
+        
+        return text;
+    }
+    
+
+    public void StageDirections()
+    {
+        List<string> tags = story.currentTags;
+        List<List<string>> Directions = new List<List<string>>();
+        int numOfActorsInScene = 0;
+
+        for (int i = 0; i < tags.Count; i++) 
+        {
+            if ( ((i + 1) % numOfDirectionsPerActor) == 0 )
+            {
+                Directions.Add(new List<string>());
+                int temp = (numOfDirectionsPerActor);
+                while (temp > 0)
+                {
+                    Directions[numOfActorsInScene].Add(tags[i - (temp-1)]);
+                    temp--;
+                }
+
+                numOfActorsInScene++;
+            }
+        }
+        
+        foreach(List<string> subList in Directions)
+        {
+            Acting(subList);
         }
 
     }
 
+    
     void ResetActors()
     {
-        triangle.transform.position = resetPos;
-        garfield.transform.position = resetPos;
+        foreach (GameObject actor in actors)
+        {
+            actor.transform.position = resetPos;
+        }
     }
     
-    
-    private void ChooseStoryChoice(Choice choice)
-    {
-        story.ChooseChoiceIndex(choice.index);
-        UpdateUI();
-    }
     
     
     public void ChooseKnot(string knot)
     {
         story.ChoosePathString(knot);
-        currentKnot = knot;
+        lastManuallyChosenKnot = knot;
+        UpdateUI();
     }
-
-    private void FinishDialogue()
+    
+    
+    
+    
+    
+    //Leftover functions__________________________________________________________________________
+    private void ChooseStoryChoice(Choice choice)
     {
-        Debug.Log("End");
+        story.ChooseChoiceIndex(choice.index);
+        
+        UpdateUI();
     }
     
 }
