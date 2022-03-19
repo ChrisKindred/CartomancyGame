@@ -1,9 +1,10 @@
 == Default ==
 Hello <i>test</i>
-question? #test
+question? 
 ->My_Choices
 
 ==My_Choices== //repeatable choice
+#garf #runsLeftTo #left 
 Select
 + [answer1] 
 -> Response1
@@ -13,9 +14,9 @@ Select
 -> Response3
 
 == Response1 ==
-#garf #runs #left #end
-#tri #starts #right #end
-Response 1 
+#garf #runsRightTo #left 
+#tri #starts #right 
+Response 1
 * [go back to start] 
 -> My_Choices
 * [test1] 

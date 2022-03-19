@@ -546,7 +546,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 839877518}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.37, y: 0, z: 0}
+  m_LocalPosition: {x: 12.94, y: -0.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -957,7 +957,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1360242990}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 28.72, y: 0, z: 0}
+  m_LocalPosition: {x: -14.95, y: -0.32, z: 0}
   m_LocalScale: {x: 0.4156128, y: 0.4156128, z: 0.4156128}
   m_Children: []
   m_Father: {fileID: 0}
@@ -993,17 +993,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inkJSON: {fileID: 4900000, guid: 223d1e536afab1442b54563e6a608e2b, type: 3}
-  questionBox: {fileID: 2119554502}
+  lastManuallyChosenKnot: ' '
+  textBox: {fileID: 2119554502}
   choiceButtons:
   - {fileID: 399434538}
   - {fileID: 2062474945}
   - {fileID: 1196534218}
-  isTalking: 0
-  currentKnot: 
-  garfield: {fileID: 839877518}
-  triangle: {fileID: 1360242990}
-  left: {x: -7.37, y: 0}
-  right: {x: 1.18, y: 0}
+  numOfDirectionsPerActor: 3
+  actors:
+  - {fileID: 839877518}
+  - {fileID: 1360242990}
+  walkDuration: 2
+  runDuration: 1
+  screenLeft: {x: -7.37, y: 0}
+  offStageLeft: {x: -14.95, y: 0}
+  screenRight: {x: 0.44, y: 0}
+  offStageRight: {x: 12.94, y: 0}
   resetPos: {x: 28.72, y: 0}
 --- !u!4 &1417682507
 Transform:
@@ -1013,7 +1018,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1417682505}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 905.967, y: 591.2343, z: -41.332737}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
