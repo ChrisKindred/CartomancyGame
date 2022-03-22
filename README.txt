@@ -24,6 +24,13 @@ Also when making a new .ink make sure that the exported .json file is hooked int
 (additionally, using the name name when exporting as a JSON will make sure the system updates automatically)
 
 
+--Setting a background or special state--
+As you can see in the .ink file there is a %test% in the main dialogue, don't worry it won't show up! For this system I use dual percentage characters to denote a state change. (you can change it to be whatever you want it to be in the Dialogue Manager script)
+%test% will change the game state to "test" in the Global script and change the background
+If you want the background to change at all you must include this kind of command into what will be your displayed dialogue
+You must add these backgrounds and commands in the Dialogue Manager script, sorry!
+
+
 --Stage Directions--
 One major system of this game is called Stage Directions
 Stage Directions allows you to tell the computer where to place / how to move actors in a given scene.
