@@ -26,6 +26,10 @@ public class DialogueManager : MonoBehaviour
     public GameObject [] choiceButtons;
     
     
+    [Header("Background")]
+    public GameObject [] backgrounds;
+    
+    
     [Header("Stage Directions")] //look at Acting() for more info
     public int numOfDirectionsPerActor;
     public GameObject [] actors;
@@ -51,8 +55,10 @@ public class DialogueManager : MonoBehaviour
     
     void UpdateUI() // how the UI is updated, this is the leading function of the entire script
     {
-        textBox.text = LoadStoryChunk();
-
+        textBox.text = Parser(LoadStoryChunk());
+        
+        SetBackground();
+        
         ResetActors();
         StageDirections();
 
@@ -101,6 +107,39 @@ public class DialogueManager : MonoBehaviour
     
     //copy, paste, and have it call a specific node that you must dictate using ChooseKnot("stringknot");
 
+
+    
+    //this function allows the writer to use two or one special character(s) to denote a scene change
+    //this frees up the tags for directing actors
+    //this allows you to call any scene or special case
+    string Parser(string story) //IF YOU WANT TO CHANGE THE BACKGROUND IN ANY WAY YOU MUST CHANGE THE GLOBAL STATE
+    {
+        string text = "";
+        if (story.Contains("%test%"))
+        {
+            Global.g.state = Global.State.test; //changes game state and therefore can change the background
+            text = story.Replace("%test%", "");
+        }
+        
+        //add another if statement for other types of scenes
+        
+        return text;
+    }
+
+    //sets the background based off what the writer wrote
+    void SetBackground() //IF YOU WANT TO CHANGE THE BACKGROUND IN ANY WAY YOU MUST CHANGE THE GLOBAL STATE
+    {
+        switch (Global.g.state)
+        {
+            case Global.State.test:
+            {
+                backgrounds[0].SetActive(true);
+                break;
+            }
+            
+            //add more cases as background list grows
+        }
+    }
     
     
     //this function handles how to display and move an actor on the screen 
@@ -194,8 +233,8 @@ public class DialogueManager : MonoBehaviour
         }
 
     }
-
     
+
     void ResetActors()
     {
         foreach (GameObject actor in actors)
@@ -203,7 +242,6 @@ public class DialogueManager : MonoBehaviour
             actor.transform.position = resetPos;
         }
     }
-    
     
     
     public void ChooseKnot(string knot)

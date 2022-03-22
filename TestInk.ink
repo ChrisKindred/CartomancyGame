@@ -5,7 +5,7 @@ question?
 
 ==My_Choices== //repeatable choice
 #garf #runsLeftTo #left 
-Select
+Select%test%
 + [answer1] 
 -> Response1
 + [answer2] 
