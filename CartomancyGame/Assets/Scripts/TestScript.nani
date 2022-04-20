@@ -6,11 +6,11 @@ This is the next window of text, right?
 
 @back Kitchen
 
-@char a
+@char a look:right tint:#FFFFFFFF pos:20.45,0,50 rotation:0,0,0 scale:0.8,0.8,0.8
 
 a: And we're the actors?
 
-@char w
+@char w look:right tint:#FFFFFFFF pos:55,0,50 rotation:0,0,0 scale:0.8,0.8,1
 
 w: I believe so?
 
